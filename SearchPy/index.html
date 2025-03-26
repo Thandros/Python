@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pesquisa de Preços</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+    }
+    .container {
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #28a745;
+      color: #fff;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    .precos {
+      margin-top: 20px;
+      font-size: 20px;
+      text-align: center;
+      color: #333;
+    }
+    .precos ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .precos li {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .erro {
+      color: red;
+      font-size: 18px;
+      text-align: center;
+    }
+    .carregando {
+      font-size: 18px;
+      color: #007bff;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Pesquisa de Preços</h1>
+  <input type="text" id="produto" placeholder="Digite o nome do produto" />
+  <button onclick="pesquisarProduto()">Buscar Preço</button>
+
+  <div class="carregando" id="carregando" style="display: none;">Carregando...</div>
+  <div class="precos" id="precos"></div>
+  <div class="erro" id="erro"></div>
+</div>
+
+<script>
+  function pesquisarProduto() {
+    // Limpar as mensagens de erro ou preço antigo
+    document.getElementById('precos').innerHTML = '';
+    document.getElementById('erro').innerHTML = '';
+    document.getElementById('carregando').style.display = 'block'; // Exibe o texto "Carregando..."
+
+    var produto = document.getElementById('produto').value.trim();
+    if (produto === "") {
+      document.getElementById('erro').innerHTML = "Por favor, digite o nome de um produto.";
+      document.getElementById('carregando').style.display = 'none'; // Esconde "Carregando..."
+      return;
+    }
+
+    // Enviar a pesquisa para a API (backend)
+    fetch(`http://localhost:5000/buscar-preco?produto=${encodeURIComponent(produto)}`)
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('carregando').style.display = 'none'; // Esconde "Carregando..."
+        
+        if (data.precos && data.precos.length > 0) {
+          let precosList = '<ul>';
+          data.precos.forEach(function(preco) {
+            precosList += `<li>${preco}</li>`;
+          });
+          precosList += '</ul>';
+          document.getElementById('precos').innerHTML = `Preços encontrados: ${precosList}`;
+        } else {
+          document.getElementById('erro').innerHTML = "Preços não encontrados.";
+        }
+      })
+      .catch(error => {
+        document.getElementById('erro').innerHTML = "Erro ao buscar os preços. Tente novamente.";
+        console.error('Erro:', error);
+        document.getElementById('carregando').style.display = 'none'; // Esconde "Carregando..."
+      });
+  }
+</script>
+
+</body>
+</html>
