@@ -102,7 +102,7 @@
     }
 
     // Enviar a pesquisa para a API (backend)
-    fetch(`http://localhost:5000/buscar-preco?produto=${encodeURIComponent(produto)}`)
+    fetch(`http://rcsnet-001-site51.anytempurl.com/buscar-preco?produto=${encodeURIComponent(produto)}`)
       .then(response => response.json())
       .then(data => {
         document.getElementById('carregando').style.display = 'none'; // Esconde "Carregando..."
